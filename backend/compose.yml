@@ -1,0 +1,35 @@
+services:
+
+  mongodb:
+    image:  mongo:8
+    container_name: devopshub-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - devopshub-network
+
+  backend:
+    build:
+      context: .
+    image: devopshub-backend:1.0
+    container_name: devopshub-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongodb:27017/devopshub
+
+    depends_on:
+      - mongodb
+    networks:
+      - devopshub-network
+
+
+volumes:
+  mongodb_data:
+
+networks:
+  devopshub-network:
+    driver: bridge
